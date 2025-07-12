@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Organização de Salas de Prova</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .header h1 {
+            color: #1f2937;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header p {
+            color: #6b7280;
+            font-size: 1.1rem;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            background: white;
+            border-radius: 0.5rem;
+            padding: 0.25rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-tab {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            border-radius: 0.375rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            color: #374151;
+        }
+        
+        .nav-tab.active {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .nav-tab:hover:not(.active) {
+            background: #f3f4f6;
+        }
+        
+        .nav-tab:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .content-panel {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+        
+        .content-panel.active {
+            display: block;
+        }
+        
+        .upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 0.5rem;
+            padding: 3rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .upload-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+        
+        .upload-btn:hover {
+            background: #2563eb;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+        
+        .form-group input {
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .config-summary {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .generate-btn {
+            width: 100%;
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .generate-btn:hover {
+            background: #059669;
+        }
+        
+        .generate-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+        
+        .room-card {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .room-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+        
+        .room-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        
+        .student-list {
+            background: #f9fafb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            max-height: 16rem;
+            overflow-y: auto;
+        }
+        
+        .student-item {
+            font-size: 0.875rem;
+            padding: 0.25rem 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .seat-map {
+            background: #f9fafb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+        
+        .seat-grid {
+            display: grid;
+            gap: 0.25rem;
+        }
+        
+        .seat {
+            font-size: 0.75rem;
+            padding: 0.25rem;
+            border-radius: 0.25rem;
+            text-align: center;
+            min-height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid;
+        }
+        
+        .seat.occupied {
+            background: #dbeafe;
+            color: #1e40af;
+            border-color: #93c5fd;
+        }
+        
+        .seat.empty {
+            background: #f3f4f6;
+            color: #6b7280;
+            border-color: #d1d5db;
+        }
+        
+        .download-btn {
+            margin-top: 0.5rem;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            transition: background 0.2s;
+        }
+        
+        .download-list {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .download-list:hover {
+            background: #2563eb;
+        }
+        
+        .download-map {
+            background: #10b981;
+            color: white;
+        }
+        
+        .download-map:hover {
+            background: #059669;
+        }
+        
+        .preview-table {
+            background: #f9fafb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            max-height: 16rem;
+            overflow-y: auto;
+            margin-top: 1rem;
+        }
+        
+        .preview-header {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 1rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .preview-row {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 1rem;
+            padding: 0.25rem 0;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 0.875rem;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        @media (max-width: 768px) {
+            .room-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-tabs {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Sistema de Organização de Salas de Prova</h1>
+            <p>Importe estudantes, configure salas e gere listas e mapas automaticamente</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showPanel('import')">
+                📁 Importar
+            </button>
+            <button class="nav-tab" onclick="showPanel('config')">
+                ⚙️ Configurar
+            </button>
+            <button class="nav-tab" id="resultsTab" onclick="showPanel('results')" disabled>
+                👁️ Resultados
+            </button>
+        </div>
+
+        <div id="import" class="content-panel active">
+            <h2 style="margin-bottom: 1rem;">📁 Importar Lista de Estudantes</h2>
+            
+            <div class="upload-area">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">👥</div>
+                <h3 style="margin-bottom: 0.5rem;">Selecione um arquivo CSV</h3>
+                <p style="color: #6b7280; margin-bottom: 1rem;">
+                    O arquivo deve conter as colunas: matrícula, nome e turma
+                </p>
+                <input type="file" id="csvFile" accept=".csv" style="display: none;">
+                <button class="upload-btn" onclick="document.getElementById('csvFile').click()">
+                    Escolher Arquivo
+                </button>
+            </div>
+
+            <div id="studentsPreview" class="hidden">
+                <h3 style="margin-bottom: 0.5rem;">Estudantes Importados: <span id="studentCount">0</span></h3>
+                <div class="preview-table">
+                    <div class="preview-header">
+                        <div>Matrícula</div>
+                        <div>Nome</div>
+                        <div>Turma</div>
+                    </div>
+                    <div id="studentsList"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="config" class="content-panel">
+            <h2 style="margin-bottom: 1rem;">⚙️ Configuração das Salas</h2>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Número de Salas</label>
+                    <input type="number" id="numRooms" value="2" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Estudantes por Sala</label>
+                    <input type="number" id="studentsPerRoom" value="30" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Número de Fileiras</label>
+                    <input type="number" id="rows" value="6" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Carteiras por Fileira</label>
+                    <input type="number" id="columns" value="5" min="1">
+                </div>
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label>Máximo de Turmas por Sala</label>
+                    <input type="number" id="maxClassesPerRoom" value="2" min="1">
+                </div>
+            </div>
+
+            <div class="config-summary">
+                <h3 style="margin-bottom: 0.5rem;">Resumo da Configuração:</h3>
+                <p id="configSummaryText"></p>
+            </div>
+
+            <button class="generate-btn" onclick="generateRooms()" id="generateBtn" disabled>
+                Gerar Distribuição das Salas
+            </button>
+        </div>
+
+        <div id="results" class="content-panel">
+            <div id="roomsContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        var students = [];
+        var generatedRooms = [];
+
+        function showPanel(panelName) {
+            var panels = document.querySelectorAll('.content-panel');
+            for (var i = 0; i < panels.length; i++) {
+                panels[i].classList.remove('active');
+            }
+            
+            var tabs = document.querySelectorAll('.nav-tab');
+            for (var i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove('active');
+            }
+            
+            document.getElementById(panelName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function processCSV(csvText) {
+            var lines = csvText.trim().split('\n');
+            var firstLine = lines[0];
+            var separator = firstLine.includes(';') ? ';' : ',';
+            var header = lines[0].split(separator);
+            
+            for (var i = 0; i < header.length; i++) {
+                header[i] = header[i].trim().toLowerCase();
+            }
+            
+            var matriculaIndex = -1;
+            var nomeIndex = -1;
+            var turmaIndex = -1;
+            
+            for (var i = 0; i < header.length; i++) {
+                if (header[i].includes('matricula') || header[i].includes('matrícula')) {
+                    matriculaIndex = i;
+                }
+                if (header[i].includes('nome')) {
+                    nomeIndex = i;
+                }
+                if (header[i].includes('turma') || header[i].includes('classe')) {
+                    turmaIndex = i;
+                }
+            }
+
+            if (matriculaIndex === -1 || nomeIndex === -1 || turmaIndex === -1) {
+                throw new Error('CSV deve conter as colunas: matrícula, nome e turma');
+            }
+
+            var processedStudents = [];
+            for (var i = 1; i < lines.length; i++) {
+                var cols = lines[i].split(separator);
+                for (var j = 0; j < cols.length; j++) {
+                    cols[j] = cols[j].trim().replace(/['"]/g, '');
+                }
+                
+                var student = {
+                    id: i,
+                    matricula: cols[matriculaIndex] || '',
+                    nome: cols[nomeIndex] || '',
+                    turma: cols[turmaIndex] || ''
+                };
+                
+                if (student.matricula && student.nome && student.turma) {
+                    processedStudents.push(student);
+                }
+            }
+
+            return processedStudents;
+        }
+
+        function handleFileUpload(event) {
+            var file = event.target.files[0];
+            if (file && file.type === 'text/csv') {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        var processedStudents = processCSV(e.target.result);
+                        students = processedStudents;
+                        displayStudentsPreview();
+                        updateGenerateButtonState();
+                        alert(processedStudents.length + ' estudantes importados com sucesso!');
+                    } catch (error) {
+                        alert('Erro ao processar CSV: ' + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            } else {
+                alert('Por favor, selecione um arquivo CSV válido.');
+            }
+        }
+
+        function displayStudentsPreview() {
+            var preview = document.getElementById('studentsPreview');
+            var count = document.getElementById('studentCount');
+            var list = document.getElementById('studentsList');
+            
+            count.textContent = students.length;
+            list.innerHTML = '';
+            
+            var maxShow = Math.min(10, students.length);
+            for (var i = 0; i < maxShow; i++) {
+                var student = students[i];
+                var row = document.createElement('div');
+                row.className = 'preview-row';
+                row.innerHTML = '<div>' + student.matricula + '</div><div>' + student.nome + '</div><div>' + student.turma + '</div>';
+                list.appendChild(row);
+            }
+            
+            if (students.length > 10) {
+                var moreRow = document.createElement('div');
+                moreRow.style.textAlign = 'center';
+                moreRow.style.color = '#6b7280';
+                moreRow.style.marginTop = '0.5rem';
+                moreRow.textContent = '... e mais ' + (students.length - 10) + ' estudantes';
+                list.appendChild(moreRow);
+            }
+            
+            preview.classList.remove('hidden');
+        }
+
+        function updateConfigSummary() {
+            var numRooms = parseInt(document.getElementById('numRooms').value);
+            var studentsPerRoom = parseInt(document.getElementById('studentsPerRoom').value);
+            var rows = parseInt(document.getElementById('rows').value);
+            var columns = parseInt(document.getElementById('columns').value);
+            var maxClassesPerRoom = parseInt(document.getElementById('maxClassesPerRoom').value);
+            
+            var summaryText = numRooms + ' salas com ' + studentsPerRoom + ' estudantes cada, dispostos em ' + 
+                             rows + ' fileiras de ' + columns + ' carteiras. Máximo de ' + maxClassesPerRoom + ' turmas por sala.';
+            
+            document.getElementById('configSummaryText').textContent = summaryText;
+            updateGenerateButtonState();
+        }
+
+        function updateGenerateButtonState() {
+            var btn = document.getElementById('generateBtn');
+            btn.disabled = students.length === 0;
+        }
+
+        function shuffleArray(array) {
+            var shuffled = array.slice();
+            for (var i = shuffled.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var temp = shuffled[i];
+                shuffled[i] = shuffled[j];
+                shuffled[j] = temp;
+            }
+            return shuffled;
+        }
+
+        function distributeStudents(studentsList, rows, cols) {
+            var totalPositions = rows * cols;
+            var positions = new Array(totalPositions);
+            for (var i = 0; i < totalPositions; i++) {
+                positions[i] = null;
+            }
+            
+            var shuffledStudents = shuffleArray(studentsList);
+            
+            function getAdjacentPositions(pos) {
+                var row = Math.floor(pos / cols);
+                var col = pos % cols;
+                var adjacent = [];
+                
+                if (row > 0) adjacent.push((row - 1) * cols + col);
+                if (row < rows - 1) adjacent.push((row + 1) * cols + col);
+                if (col > 0) adjacent.push(row * cols + (col - 1));
+                if (col < cols - 1) adjacent.push(row * cols + (col + 1));
+                
+                return adjacent;
+            }
+
+            for (var i = 0; i < shuffledStudents.length; i++) {
+                var student = shuffledStudents[i];
+                var placed = false;
+                var availablePositions = [];
+                
+                for (var j = 0; j < positions.length; j++) {
+                    if (positions[j] === null) {
+                        availablePositions.push(j);
+                    }
+                }
+
+                for (var j = 0; j < availablePositions.length; j++) {
+                    var pos = availablePositions[j];
+                    var adjacentPositions = getAdjacentPositions(pos);
+                    var hasConflict = false;
+                    
+                    for (var k = 0; k < adjacentPositions.length; k++) {
+                        var adjPos = adjacentPositions[k];
+                        if (positions[adjPos] && positions[adjPos].turma === student.turma) {
+                            hasConflict = true;
+                            break;
+                        }
+                    }
+
+                    if (!hasConflict) {
+                        positions[pos] = student;
+                        placed = true;
+                        break;
+                    }
+                }
+
+                if (!placed && availablePositions.length > 0) {
+                    positions[availablePositions[0]] = student;
+                }
+            }
+
+            return positions;
+        }
+
+        function validateConfiguration() {
+            var numRooms = parseInt(document.getElementById('numRooms').value);
+            var studentsPerRoom = parseInt(document.getElementById('studentsPerRoom').value);
+            var rows = parseInt(document.getElementById('rows').value);
+            var columns = parseInt(document.getElementById('columns').value);
+            var maxClassesPerRoom = parseInt(document.getElementById('maxClassesPerRoom').value);
+            
+            var totalCapacity = numRooms * studentsPerRoom;
+            var seatsPerRoom = rows * columns;
+            
+            var turmas = [];
+            for (var i = 0; i < students.length; i++) {
+                if (turmas.indexOf(students[i].turma) === -1) {
+                    turmas.push(students[i].turma);
+                }
+            }
+            var totalClasses = turmas.length;
+            
+            var errors = [];
+            
+            if (totalCapacity < students.length) {
+                errors.push('Capacidade insuficiente: ' + totalCapacity + ' vagas para ' + students.length + ' estudantes. Aumente o número de salas ou estudantes por sala.');
+            }
+            
+            if (studentsPerRoom > seatsPerRoom) {
+                errors.push('Layout insuficiente: ' + studentsPerRoom + ' estudantes por sala, mas apenas ' + seatsPerRoom + ' carteiras (' + rows + 'x' + columns + ').');
+            }
+            
+            var minRoomsNeeded = Math.ceil(totalClasses / maxClassesPerRoom);
+            if (numRooms < minRoomsNeeded) {
+                errors.push('Número insuficiente de salas para respeitar o limite de turmas: ' + totalClasses + ' turmas com máximo de ' + maxClassesPerRoom + ' por sala requer pelo menos ' + minRoomsNeeded + ' salas.');
+            }
+            
+            return errors;
+        }
+
+        function generateRooms() {
+            try {
+                if (students.length === 0) {
+                    alert('Por favor, importe a lista de estudantes primeiro.');
+                    return;
+                }
+
+                var validationErrors = validateConfiguration();
+                if (validationErrors.length > 0) {
+                    alert('Erro na configuração:\n\n' + validationErrors.join('\n\n') + '\n\nAjuste as configurações e tente novamente.');
+                    return;
+                }
+
+                var numRooms = parseInt(document.getElementById('numRooms').value);
+                var studentsPerRoom = parseInt(document.getElementById('studentsPerRoom').value);
+                var rows = parseInt(document.getElementById('rows').value);
+                var columns = parseInt(document.getElementById('columns').value);
+                var maxClassesPerRoom = parseInt(document.getElementById('maxClassesPerRoom').value);
+                
+                var shuffledStudents = shuffleArray(students.slice());
+                var rooms = [];
+                
+                for (var roomNum = 0; roomNum < numRooms && shuffledStudents.length > 0; roomNum++) {
+                    var roomStudents = [];
+                    var usedClasses = [];
+                    
+                    for (var i = shuffledStudents.length - 1; i >= 0; i--) {
+                        var student = shuffledStudents[i];
+                        var canAdd = roomStudents.length < studentsPerRoom && 
+                                    (usedClasses.indexOf(student.turma) !== -1 || usedClasses.length < maxClassesPerRoom);
+                        
+                        if (canAdd) {
+                            roomStudents.push(student);
+                            if (usedClasses.indexOf(student.turma) === -1) {
+                                usedClasses.push(student.turma);
+                            }
+                            shuffledStudents.splice(i, 1);
+                        }
+                        
+                        if (roomStudents.length >= studentsPerRoom) break;
+                    }
+                    
+                    roomStudents.sort(function(a, b) {
+                        return a.nome.localeCompare(b.nome);
+                    });
+                    
+                    var seatMap = distributeStudents(roomStudents, rows, columns);
+                    
+                    rooms.push({
+                        id: roomNum + 1,
+                        students: roomStudents,
+                        seatMap: seatMap,
+                        rows: rows,
+                        columns: columns
+                    });
+                }
+
+                generatedRooms = rooms;
+                displayResults();
+                
+                document.getElementById('resultsTab').disabled = false;
+                showPanel('results');
+                
+                var totalDistributed = 0;
+                for (var i = 0; i < rooms.length; i++) {
+                    totalDistributed += rooms[i].students.length;
+                }
+                
+                if (totalDistributed < students.length) {
+                    alert('Distribuição parcial realizada:\n\n• Estudantes distribuídos: ' + totalDistributed + '/' + students.length + '\n• Salas criadas: ' + rooms.length + '\n• Estudantes não alocados: ' + (students.length - totalDistributed) + '\n\nConsidere ajustar as configurações para alocar todos os estudantes.');
+                } else {
+                    alert('✅ Distribuição concluída com sucesso!\n\n• Total de estudantes: ' + students.length + '\n• Estudantes distribuídos: ' + totalDistributed + '\n• Salas utilizadas: ' + rooms.length);
+                }
+                
+            } catch (error) {
+                console.error('Erro na geração de salas:', error);
+                alert('Erro interno ao gerar salas. Verifique o console para detalhes.');
+            }
+        }
+
+        function displayResults() {
+            var container = document.getElementById('roomsContainer');
+            container.innerHTML = '';
+            
+            for (var i = 0; i < generatedRooms.length; i++) {
+                var room = generatedRooms[i];
+                var roomDiv = document.createElement('div');
+                roomDiv.className = 'room-card';
+                
+                var studentsHtml = '';
+                for (var j = 0; j < room.students.length; j++) {
+                    var student = room.students[j];
+                    studentsHtml += '<div class="student-item">' + (j + 1) + '. ' + student.nome + ' - ' + student.matricula + ' (' + student.turma + ')</div>';
+                }
+                
+                var seatsHtml = '';
+                for (var j = 0; j < room.seatMap.length; j++) {
+                    var student = room.seatMap[j];
+                    if (student) {
+                        var firstName = student.nome.split(' ')[0];
+                        seatsHtml += '<div class="seat occupied" title="' + student.nome + ' (' + student.turma + ')">' + firstName + '</div>';
+                    } else {
+                        seatsHtml += '<div class="seat empty" title="Vazio">-</div>';
+                    }
+                }
+                
+                roomDiv.innerHTML = 
+                    '<div class="room-title">Sala ' + room.id + ' - ' + room.students.length + ' estudantes</div>' +
+                    '<div class="room-content">' +
+                        '<div>' +
+                            '<h3 style="margin-bottom: 0.5rem;">📋 Lista Alfabética</h3>' +
+                            '<div class="student-list">' + studentsHtml + '</div>' +
+                            '<button class="download-btn download-list" onclick="downloadList(' + room.id + ')">⬇️ Baixar Lista</button>' +
+                        '</div>' +
+                        '<div>' +
+                            '<h3 style="margin-bottom: 0.5rem;">🗺️ Mapa da Sala</h3>' +
+                            '<div class="seat-map">' +
+                                '<div class="seat-grid" style="grid-template-columns: repeat(' + room.columns + ', 1fr);">' + 
+                                    seatsHtml + 
+                                '</div>' +
+                            '</div>' +
+                            '<button class="download-btn download-map" onclick="downloadMap(' + room.id + ')">⬇️ Baixar Mapa</button>' +
+                        '</div>' +
+                    '</div>';
+                
+                container.appendChild(roomDiv);
+            }
+        }
+
+        function downloadList(roomId) {
+            try {
+                var room = null;
+                for (var i = 0; i < generatedRooms.length; i++) {
+                    if (generatedRooms[i].id === roomId) {
+                        room = generatedRooms[i];
+                        break;
+                    }
+                }
+                
+                if (room) {
+                    var content = 'LISTA DE PRESENÇA - SALA ' + room.id + '\n\n';
+                    content += 'Total de estudantes: ' + room.students.length + '\n';
+                    content += 'Data: ___/___/______   Horário: ___:___\n';
+                    content += 'Disciplina: _________________________\n\n';
+                    
+                    content += '--------------------------------------------------------------------------------\n';
+                    
+                    for (var i = 0; i < room.students.length; i++) {
+                        var student = room.students[i];
+                        var num = (i + 1).toString();
+                        while (num.length < 4) num += ' ';
+                        
+                        var matricula = student.matricula.toString();
+                        while (matricula.length < 12) matricula += ' ';
+                        
+                        var nome = student.nome;
+                        while (nome.length < 35) nome += ' ';
+                        
+                        var turma = student.turma;
+                        while (turma.length < 8) turma += ' ';
+                        
+                        content += num + matricula + nome + turma + '_________________\n';
+                    }
+                    
+                    var blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+                    var url = URL.createObjectURL(blob);
+                    var link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'lista_presenca_sala_' + room.id + '.txt';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                    
+                    alert('Lista da Sala ' + room.id + ' baixada com sucesso!');
+                }
+            } catch (error) {
+                alert('Erro ao gerar arquivo: ' + error.message);
+                console.error('Erro no download:', error);
+            }
+        }
+
+        function downloadMap(roomId) {
+            try {
+                var room = null;
+                for (var i = 0; i < generatedRooms.length; i++) {
+                    if (generatedRooms[i].id === roomId) {
+                        room = generatedRooms[i];
+                        break;
+                    }
+                }
+                
+                if (room) {
+                    var content = 'MAPA DE DISTRIBUIÇÃO - SALA ' + room.id + '\n';
+                    content += 'Total de estudantes: ' + room.students.length + '\n';
+                    content += 'Layout: ' + room.rows + ' fileiras x ' + room.columns + ' colunas\n\n';
+                    content += 'FRENTE DA SALA (PROFESSOR)\n';
+                    content += '============================================================\n\n';
+                    
+                    for (var row = 0; row < room.rows; row++) {
+                        var rowContent = 'Fileira ' + (row + 1) + ': ';
+                        for (var col = 0; col < room.columns; col++) {
+                            var pos = row * room.columns + col;
+                            var student = room.seatMap[pos];
+                            if (student) {
+                                var studentInfo = student.nome + ' (' + student.turma + ')';
+                                if (studentInfo.length > 20) {
+                                    studentInfo = studentInfo.substring(0, 20);
+                                }
+                                while (studentInfo.length < 20) {
+                                    studentInfo += ' ';
+                                }
+                                rowContent += '[' + studentInfo + '] ';
+                            } else {
+                                rowContent += '[VAZIO               ] ';
+                            }
+                        }
+                        content += rowContent + '\n';
+                    }
+                    
+                    content += '\n============================================================\n';
+                    content += 'FUNDO DA SALA\n\n';
+                    
+                    var turmas = [];
+                    for (var i = 0; i < room.students.length; i++) {
+                        if (turmas.indexOf(room.students[i].turma) === -1) {
+                            turmas.push(room.students[i].turma);
+                        }
+                    }
+                    content += 'TURMAS PRESENTES: ' + turmas.join(', ') + '\n';
+                    
+                    var blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+                    var url = URL.createObjectURL(blob);
+                    var link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'mapa_sala_' + room.id + '.txt';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                    
+                    alert('Mapa da Sala ' + room.id + ' baixado com sucesso!');
+                }
+            } catch (error) {
+                alert('Erro ao gerar arquivo: ' + error.message);
+                console.error('Erro no download:', error);
+            }
+        }
+
+        // Event listeners
+        document.getElementById('csvFile').addEventListener('change', handleFileUpload);
+        document.getElementById('numRooms').addEventListener('change', updateConfigSummary);
+        document.getElementById('studentsPerRoom').addEventListener('change', updateConfigSummary);
+        document.getElementById('rows').addEventListener('change', updateConfigSummary);
+        document.getElementById('columns').addEventListener('change', updateConfigSummary);
+        document.getElementById('maxClassesPerRoom').addEventListener('change', updateConfigSummary);
+
+        // Initialize
+        updateConfigSummary();
+        updateGenerateButtonState();
+    </script>
+</body>
+</html>
