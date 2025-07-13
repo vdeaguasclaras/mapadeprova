@@ -341,16 +341,38 @@
             }
         }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
     <script>
-        // Verificar se jsPDF carregou corretamente
+        // Aguardar o carregamento completo da página e da biblioteca
+        var jsPDFReady = false;
+        
         window.addEventListener('load', function() {
-            if (typeof window.jsPDF === 'undefined') {
-                console.log('jsPDF não carregou, tentando carregar novamente...');
-                var script = document.createElement('script');
-                script.src = 'https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js';
-                document.head.appendChild(script);
-            }
+            // Verificar múltiplas formas de acessar jsPDF
+            setTimeout(function() {
+                if (typeof window.jsPDF !== 'undefined') {
+                    jsPDFReady = true;
+                    console.log('✅ jsPDF carregado via window.jsPDF');
+                } else if (typeof window.jspdf !== 'undefined' && window.jspdf.jsPDF) {
+                    window.jsPDF = window.jspdf.jsPDF;
+                    jsPDFReady = true;
+                    console.log('✅ jsPDF carregado via window.jspdf.jsPDF');
+                } else {
+                    console.log('❌ jsPDF não encontrado, tentando carregar de outra CDN...');
+                    // Tentar carregar de outra CDN
+                    var script = document.createElement('script');
+                    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+                    script.onload = function() {
+                        if (typeof window.jsPDF !== 'undefined' || (window.jspdf && window.jspdf.jsPDF)) {
+                            if (window.jspdf && window.jspdf.jsPDF) {
+                                window.jsPDF = window.jspdf.jsPDF;
+                            }
+                            jsPDFReady = true;
+                            console.log('✅ jsPDF carregado da CDN alternativa');
+                        }
+                    };
+                    document.head.appendChild(script);
+                }
+            }, 1000);
         });
     </script>
 </head>
@@ -831,6 +853,8 @@
         }
 
         function downloadList(roomId) {
+            console.log('🔄 Iniciando download da lista, jsPDFReady:', jsPDFReady);
+            
             try {
                 var room = null;
                 for (var i = 0; i < generatedRooms.length; i++) {
@@ -841,11 +865,21 @@
                 }
                 
                 if (room) {
-                    // Verificar se jsPDF está disponível
-                    var jsPDFLib = window.jsPDF || window.jspdf?.jsPDF;
+                    // Verificar múltiplas formas de acessar jsPDF
+                    var jsPDFConstructor = null;
                     
-                    if (jsPDFLib) {
-                        var doc = new jsPDFLib();
+                    if (jsPDFReady && typeof window.jsPDF !== 'undefined') {
+                        jsPDFConstructor = window.jsPDF;
+                        console.log('📄 Usando window.jsPDF');
+                    } else if (typeof window.jspdf !== 'undefined' && window.jspdf.jsPDF) {
+                        jsPDFConstructor = window.jspdf.jsPDF;
+                        console.log('📄 Usando window.jspdf.jsPDF');
+                    }
+                    
+                    if (jsPDFConstructor) {
+                        console.log('✅ jsPDF encontrado, gerando PDF...');
+                        
+                        var doc = new jsPDFConstructor();
                         
                         // Logo e cabeçalho
                         doc.setFontSize(20);
@@ -906,16 +940,25 @@
                         doc.setTextColor(100, 100, 100);
                         doc.text('Gerado pelo Sistema de Organização de Salas - Colégio Marista Águas Claras', 20, 285);
                         
-                        doc.save('lista_presenca_sala_' + room.id + '.pdf');
-                        alert('✅ Lista da Sala ' + room.id + ' baixada em PDF com sucesso!');
+                        // Tentar salvar o PDF
+                        try {
+                            doc.save('lista_presenca_sala_' + room.id + '.pdf');
+                            alert('✅ Lista da Sala ' + room.id + ' baixada em PDF com sucesso!');
+                            console.log('✅ PDF gerado e baixado com sucesso');
+                            return;
+                        } catch (saveError) {
+                            console.log('❌ Erro ao salvar PDF:', saveError);
+                            throw saveError;
+                        }
                     } else {
-                        console.log('jsPDF não está disponível, usando fallback de texto');
-                        downloadListText(roomId);
+                        console.log('❌ jsPDF não encontrado, usando fallback');
+                        throw new Error('jsPDF não está disponível');
                     }
                 }
             } catch (error) {
-                console.error('Erro ao gerar PDF:', error);
-                alert('Erro ao gerar PDF. Baixando como arquivo de texto...');
+                console.error('❌ Erro ao gerar PDF:', error);
+                console.log('🔄 Usando fallback para arquivo de texto...');
+                alert('⚠️ Não foi possível gerar PDF. Baixando como arquivo de texto...');
                 downloadListText(roomId);
             }
         }
@@ -969,6 +1012,8 @@
         }
 
         function downloadMap(roomId) {
+            console.log('🔄 Iniciando download do mapa, jsPDFReady:', jsPDFReady);
+            
             try {
                 var room = null;
                 for (var i = 0; i < generatedRooms.length; i++) {
@@ -979,11 +1024,21 @@
                 }
                 
                 if (room) {
-                    // Verificar se jsPDF está disponível
-                    var jsPDFLib = window.jsPDF || window.jspdf?.jsPDF;
+                    // Verificar múltiplas formas de acessar jsPDF
+                    var jsPDFConstructor = null;
                     
-                    if (jsPDFLib) {
-                        var doc = new jsPDFLib();
+                    if (jsPDFReady && typeof window.jsPDF !== 'undefined') {
+                        jsPDFConstructor = window.jsPDF;
+                        console.log('📄 Usando window.jsPDF');
+                    } else if (typeof window.jspdf !== 'undefined' && window.jspdf.jsPDF) {
+                        jsPDFConstructor = window.jspdf.jsPDF;
+                        console.log('📄 Usando window.jspdf.jsPDF');
+                    }
+                    
+                    if (jsPDFConstructor) {
+                        console.log('✅ jsPDF encontrado, gerando PDF...');
+                        
+                        var doc = new jsPDFConstructor();
                         
                         // Logo e cabeçalho
                         doc.setFontSize(20);
@@ -1054,16 +1109,25 @@
                         doc.setTextColor(100, 100, 100);
                         doc.text('Gerado pelo Sistema de Organização de Salas - Colégio Marista Águas Claras', 20, 285);
                         
-                        doc.save('mapa_sala_' + room.id + '.pdf');
-                        alert('✅ Mapa da Sala ' + room.id + ' baixado em PDF com sucesso!');
+                        // Tentar salvar o PDF
+                        try {
+                            doc.save('mapa_sala_' + room.id + '.pdf');
+                            alert('✅ Mapa da Sala ' + room.id + ' baixado em PDF com sucesso!');
+                            console.log('✅ PDF gerado e baixado com sucesso');
+                            return;
+                        } catch (saveError) {
+                            console.log('❌ Erro ao salvar PDF:', saveError);
+                            throw saveError;
+                        }
                     } else {
-                        console.log('jsPDF não está disponível, usando fallback de texto');
-                        downloadMapText(roomId);
+                        console.log('❌ jsPDF não encontrado, usando fallback');
+                        throw new Error('jsPDF não está disponível');
                     }
                 }
             } catch (error) {
-                console.error('Erro ao gerar PDF:', error);
-                alert('Erro ao gerar PDF. Baixando como arquivo de texto...');
+                console.error('❌ Erro ao gerar PDF:', error);
+                console.log('🔄 Usando fallback para arquivo de texto...');
+                alert('⚠️ Não foi possível gerar PDF. Baixando como arquivo de texto...');
                 downloadMapText(roomId);
             }
         }
