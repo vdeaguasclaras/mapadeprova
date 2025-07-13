@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Organização de Salas de Prova</title>
+    <title>Sistema de Organização de Salas de Prova - Colégio Marista</title>
     <style>
         * {
             margin: 0;
@@ -13,7 +13,7 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
+            background: linear-gradient(135deg, #e8f1fc 0%, #d1e7f8 100%);
             min-height: 100vh;
             padding: 1rem;
         }
@@ -28,14 +28,23 @@
             margin-bottom: 2rem;
         }
         
+        .logo-container {
+            margin-bottom: 1rem;
+        }
+        
+        .logo {
+            max-width: 300px;
+            height: auto;
+        }
+        
         .header h1 {
-            color: #1f2937;
+            color: #1e4d72;
             font-size: 2.5rem;
             margin-bottom: 0.5rem;
         }
         
         .header p {
-            color: #6b7280;
+            color: #4a6b82;
             font-size: 1.1rem;
         }
         
@@ -46,7 +55,7 @@
             background: white;
             border-radius: 0.5rem;
             padding: 0.25rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px rgba(30, 77, 114, 0.1);
         }
         
         .nav-tab {
@@ -59,16 +68,18 @@
             align-items: center;
             gap: 0.5rem;
             transition: all 0.2s;
-            color: #374151;
+            color: #1e4d72;
+            font-weight: 500;
         }
         
         .nav-tab.active {
-            background: #3b82f6;
+            background: #1e4d72;
             color: white;
         }
         
         .nav-tab:hover:not(.active) {
-            background: #f3f4f6;
+            background: #f0f7ff;
+            color: #1e4d72;
         }
         
         .nav-tab:disabled {
@@ -80,7 +91,7 @@
             background: white;
             border-radius: 0.5rem;
             padding: 2rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px rgba(30, 77, 114, 0.1);
             display: none;
         }
         
@@ -89,15 +100,16 @@
         }
         
         .upload-area {
-            border: 2px dashed #d1d5db;
+            border: 2px dashed #6ba3d0;
             border-radius: 0.5rem;
             padding: 3rem;
             text-align: center;
             margin-bottom: 1.5rem;
+            background: #f8fbff;
         }
         
         .upload-btn {
-            background: #3b82f6;
+            background: #1e4d72;
             color: white;
             border: none;
             padding: 0.75rem 1.5rem;
@@ -105,10 +117,11 @@
             cursor: pointer;
             font-size: 1rem;
             transition: background 0.2s;
+            font-weight: 600;
         }
         
         .upload-btn:hover {
-            background: #2563eb;
+            background: #164063;
         }
         
         .form-grid {
@@ -126,25 +139,25 @@
         .form-group label {
             font-weight: 600;
             margin-bottom: 0.5rem;
-            color: #374151;
+            color: #1e4d72;
         }
         
         .form-group input {
             padding: 0.75rem;
-            border: 1px solid #d1d5db;
+            border: 1px solid #c1d9ed;
             border-radius: 0.5rem;
             font-size: 1rem;
         }
         
         .form-group input:focus {
             outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            border-color: #1e4d72;
+            box-shadow: 0 0 0 3px rgba(30, 77, 114, 0.1);
         }
         
         .config-summary {
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
+            background: #f0f7ff;
+            border: 1px solid #b8d4ed;
             border-radius: 0.5rem;
             padding: 1rem;
             margin: 1.5rem 0;
@@ -152,7 +165,7 @@
         
         .generate-btn {
             width: 100%;
-            background: #10b981;
+            background: #2563eb;
             color: white;
             border: none;
             padding: 1rem;
@@ -164,7 +177,7 @@
         }
         
         .generate-btn:hover {
-            background: #059669;
+            background: #1d4ed8;
         }
         
         .generate-btn:disabled {
@@ -177,14 +190,15 @@
             border-radius: 0.5rem;
             padding: 1.5rem;
             margin-bottom: 1.5rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 4px rgba(30, 77, 114, 0.1);
+            border-left: 4px solid #1e4d72;
         }
         
         .room-title {
             font-size: 1.25rem;
             font-weight: 600;
             margin-bottom: 1rem;
-            color: #1f2937;
+            color: #1e4d72;
         }
         
         .room-content {
@@ -194,23 +208,25 @@
         }
         
         .student-list {
-            background: #f9fafb;
+            background: #f8fbff;
             border-radius: 0.5rem;
             padding: 1rem;
             max-height: 16rem;
             overflow-y: auto;
+            border: 1px solid #e8f1fc;
         }
         
         .student-item {
             font-size: 0.875rem;
             padding: 0.25rem 0;
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e8f1fc;
         }
         
         .seat-map {
-            background: #f9fafb;
+            background: #f8fbff;
             border-radius: 0.5rem;
             padding: 1rem;
+            border: 1px solid #e8f1fc;
         }
         
         .seat-grid {
@@ -253,33 +269,35 @@
             align-items: center;
             gap: 0.25rem;
             transition: background 0.2s;
+            font-weight: 600;
         }
         
         .download-list {
-            background: #3b82f6;
+            background: #1e4d72;
             color: white;
         }
         
         .download-list:hover {
-            background: #2563eb;
+            background: #164063;
         }
         
         .download-map {
-            background: #10b981;
+            background: #2563eb;
             color: white;
         }
         
         .download-map:hover {
-            background: #059669;
+            background: #1d4ed8;
         }
         
         .preview-table {
-            background: #f9fafb;
+            background: #f8fbff;
             border-radius: 0.5rem;
             padding: 1rem;
             max-height: 16rem;
             overflow-y: auto;
             margin-top: 1rem;
+            border: 1px solid #e8f1fc;
         }
         
         .preview-header {
@@ -287,7 +305,7 @@
             grid-template-columns: 1fr 2fr 1fr;
             gap: 1rem;
             font-weight: 600;
-            color: #374151;
+            color: #1e4d72;
             margin-bottom: 0.5rem;
             font-size: 0.875rem;
         }
@@ -297,7 +315,7 @@
             grid-template-columns: 1fr 2fr 1fr;
             gap: 1rem;
             padding: 0.25rem 0;
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e8f1fc;
             font-size: 0.875rem;
         }
         
@@ -313,12 +331,24 @@
             .nav-tabs {
                 flex-direction: column;
             }
+            
+            .logo {
+                max-width: 200px;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
     <div class="container">
         <div class="header">
+            <div class="logo-container">
+                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDQwMCAxMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMTIwIiBmaWxsPSJ3aGl0ZSIvPgo8Y2lyY2xlIGN4PSI2MCIgY3k9IjYwIiByPSI0MCIgZmlsbD0iIzFlNGQ3MiIvPgo8dGV4dCB4PSIxMjAiIHk9IjQ1IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjQiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjMWU0ZDcyIj5DT0zDiUdJTyBNQVJJU1RBPC90ZXh0Pgo8dGV4dCB4PSIxMjAiIHk9IjcwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiMxZTRkNzIiPsOBR1VBUyBDTEFSQVM8L3RleHQ+Cjx0ZXh0IHg9IjEyMCIgeT0iOTAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMiIgZmlsbD0iIzRhNmI4MiI+U2lzdGVtYSBkZSBPcmdhbml6YcOnw6NvIGRlIFNhbGFzIGRlIFByb3ZhPC90ZXh0Pgo8L3N2Zz4=" alt="Colégio Marista Águas Claras" class="logo">
+            </div>
             <h1>Sistema de Organização de Salas de Prova</h1>
             <p>Importe estudantes, configure salas e gere listas e mapas automaticamente</p>
         </div>
@@ -336,12 +366,12 @@
         </div>
 
         <div id="import" class="content-panel active">
-            <h2 style="margin-bottom: 1rem;">📁 Importar Lista de Estudantes</h2>
+            <h2 style="margin-bottom: 1rem; color: #1e4d72;">📁 Importar Lista de Estudantes</h2>
             
             <div class="upload-area">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">👥</div>
-                <h3 style="margin-bottom: 0.5rem;">Selecione um arquivo CSV</h3>
-                <p style="color: #6b7280; margin-bottom: 1rem;">
+                <div style="font-size: 3rem; margin-bottom: 1rem; color: #1e4d72;">👥</div>
+                <h3 style="margin-bottom: 0.5rem; color: #1e4d72;">Selecione um arquivo CSV</h3>
+                <p style="color: #4a6b82; margin-bottom: 1rem;">
                     O arquivo deve conter as colunas: matrícula, nome e turma
                 </p>
                 <input type="file" id="csvFile" accept=".csv" style="display: none;">
@@ -351,7 +381,7 @@
             </div>
 
             <div id="studentsPreview" class="hidden">
-                <h3 style="margin-bottom: 0.5rem;">Estudantes Importados: <span id="studentCount">0</span></h3>
+                <h3 style="margin-bottom: 0.5rem; color: #1e4d72;">Estudantes Importados: <span id="studentCount">0</span></h3>
                 <div class="preview-table">
                     <div class="preview-header">
                         <div>Matrícula</div>
@@ -364,7 +394,7 @@
         </div>
 
         <div id="config" class="content-panel">
-            <h2 style="margin-bottom: 1rem;">⚙️ Configuração das Salas</h2>
+            <h2 style="margin-bottom: 1rem; color: #1e4d72;">⚙️ Configuração das Salas</h2>
 
             <div class="form-grid">
                 <div class="form-group">
@@ -390,8 +420,8 @@
             </div>
 
             <div class="config-summary">
-                <h3 style="margin-bottom: 0.5rem;">Resumo da Configuração:</h3>
-                <p id="configSummaryText"></p>
+                <h3 style="margin-bottom: 0.5rem; color: #1e4d72;">Resumo da Configuração:</h3>
+                <p id="configSummaryText" style="color: #4a6b82;"></p>
             </div>
 
             <button class="generate-btn" onclick="generateRooms()" id="generateBtn" disabled>
@@ -516,7 +546,7 @@
             if (students.length > 10) {
                 var moreRow = document.createElement('div');
                 moreRow.style.textAlign = 'center';
-                moreRow.style.color = '#6b7280';
+                moreRow.style.color = '#4a6b82';
                 moreRow.style.marginTop = '0.5rem';
                 moreRow.textContent = '... e mais ' + (students.length - 10) + ' estudantes';
                 list.appendChild(moreRow);
@@ -762,23 +792,31 @@
                     '<div class="room-title">Sala ' + room.id + ' - ' + room.students.length + ' estudantes</div>' +
                     '<div class="room-content">' +
                         '<div>' +
-                            '<h3 style="margin-bottom: 0.5rem;">📋 Lista Alfabética</h3>' +
+                            '<h3 style="margin-bottom: 0.5rem; color: #1e4d72;">📋 Lista Alfabética</h3>' +
                             '<div class="student-list">' + studentsHtml + '</div>' +
-                            '<button class="download-btn download-list" onclick="downloadList(' + room.id + ')">⬇️ Baixar Lista</button>' +
+                            '<button class="download-btn download-list" onclick="downloadList(' + room.id + ')">⬇️ Baixar Lista PDF</button>' +
                         '</div>' +
                         '<div>' +
-                            '<h3 style="margin-bottom: 0.5rem;">🗺️ Mapa da Sala</h3>' +
+                            '<h3 style="margin-bottom: 0.5rem; color: #1e4d72;">🗺️ Mapa da Sala</h3>' +
                             '<div class="seat-map">' +
                                 '<div class="seat-grid" style="grid-template-columns: repeat(' + room.columns + ', 1fr);">' + 
                                     seatsHtml + 
                                 '</div>' +
                             '</div>' +
-                            '<button class="download-btn download-map" onclick="downloadMap(' + room.id + ')">⬇️ Baixar Mapa</button>' +
+                            '<button class="download-btn download-map" onclick="downloadMap(' + room.id + ')">⬇️ Baixar Mapa PDF</button>' +
                         '</div>' +
                     '</div>';
                 
                 container.appendChild(roomDiv);
             }
+        }
+
+        function getCurrentDate() {
+            var today = new Date();
+            var day = today.getDate().toString().padStart(2, '0');
+            var month = (today.getMonth() + 1).toString().padStart(2, '0');
+            var year = today.getFullYear();
+            return day + '/' + month + '/' + year;
         }
 
         function downloadList(roomId) {
@@ -791,46 +829,126 @@
                     }
                 }
                 
-                if (room) {
-                    var content = 'LISTA DE PRESENÇA - SALA ' + room.id + '\n\n';
-                    content += 'Total de estudantes: ' + room.students.length + '\n';
-                    content += 'Data: ___/___/______   Horário: ___:___\n';
-                    content += 'Disciplina: _________________________\n\n';
+                if (room && typeof jsPDF !== 'undefined') {
+                    var doc = new jsPDF.jsPDF();
                     
-                    content += '--------------------------------------------------------------------------------\n';
+                    // Logo e cabeçalho
+                    doc.setFontSize(20);
+                    doc.setTextColor(30, 77, 114);
+                    doc.text('COLÉGIO MARISTA ÁGUAS CLARAS', 20, 20);
                     
-                    for (var i = 0; i < room.students.length; i++) {
-                        var student = room.students[i];
-                        var num = (i + 1).toString();
-                        while (num.length < 4) num += ' ';
+                    doc.setFontSize(16);
+                    doc.setTextColor(30, 77, 114);
+                    doc.text('LISTA DE PRESENÇA - SALA ' + room.id, 20, 35);
+                    
+                    // Informações da prova
+                    doc.setFontSize(11);
+                    doc.setTextColor(0, 0, 0);
+                    doc.text('Total de estudantes: ' + room.students.length, 20, 50);
+                    doc.text('Data: ___/___/______', 20, 60);
+                    doc.text('Horário: ___:___', 90, 60);
+                    doc.text('Prova: _________________________', 20, 70);
+                    
+                    // Linha separadora
+                    doc.line(20, 75, 190, 75);
+                    
+                    // Cabeçalho da tabela
+                    doc.setFontSize(9);
+                    doc.setFont(undefined, 'bold');
+                    doc.text('Nº', 20, 85);
+                    doc.text('MATRÍCULA', 30, 85);
+                    doc.text('NOME', 60, 85);
+                    doc.text('TURMA', 130, 85);
+                    doc.text('ASSINATURA', 150, 85);
+                    
+                    // Linha do cabeçalho
+                    doc.line(20, 87, 190, 87);
+                    
+                    // Lista de estudantes
+                    doc.setFont(undefined, 'normal');
+                    var yPosition = 95;
+                    for (var j = 0; j < room.students.length; j++) {
+                        var student = room.students[j];
+                        var num = (j + 1).toString();
                         
-                        var matricula = student.matricula.toString();
-                        while (matricula.length < 12) matricula += ' ';
+                        doc.text(num, 20, yPosition);
+                        doc.text(student.matricula, 30, yPosition);
+                        doc.text(student.nome.substring(0, 25), 60, yPosition);
+                        doc.text(student.turma, 130, yPosition);
+                        doc.text('_________________', 150, yPosition);
                         
-                        var nome = student.nome;
-                        while (nome.length < 35) nome += ' ';
+                        yPosition += 7;
                         
-                        var turma = student.turma;
-                        while (turma.length < 8) turma += ' ';
-                        
-                        content += num + matricula + nome + turma + '_________________\n';
+                        // Nova página se necessário
+                        if (yPosition > 270) {
+                            doc.addPage();
+                            yPosition = 20;
+                        }
                     }
                     
-                    var blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-                    var url = URL.createObjectURL(blob);
-                    var link = document.createElement('a');
-                    link.href = url;
-                    link.download = 'lista_presenca_sala_' + room.id + '.txt';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    URL.revokeObjectURL(url);
+                    // Rodapé
+                    doc.setFontSize(8);
+                    doc.setTextColor(100, 100, 100);
+                    doc.text('Gerado pelo Sistema de Organização de Salas - Colégio Marista Águas Claras', 20, 285);
                     
-                    alert('Lista da Sala ' + room.id + ' baixada com sucesso!');
+                    doc.save('lista_presenca_sala_' + room.id + '.pdf');
+                    alert('Lista da Sala ' + room.id + ' baixada em PDF com sucesso!');
+                } else {
+                    // Fallback para texto se jsPDF não estiver disponível
+                    downloadListText(roomId);
                 }
             } catch (error) {
-                alert('Erro ao gerar arquivo: ' + error.message);
+                alert('Erro ao gerar PDF: ' + error.message);
                 console.error('Erro no download:', error);
+                downloadListText(roomId);
+            }
+        }
+
+        function downloadListText(roomId) {
+            var room = null;
+            for (var i = 0; i < generatedRooms.length; i++) {
+                if (generatedRooms[i].id === roomId) {
+                    room = generatedRooms[i];
+                    break;
+                }
+            }
+            
+            if (room) {
+                var content = 'COLÉGIO MARISTA ÁGUAS CLARAS\n';
+                content += 'LISTA DE PRESENÇA - SALA ' + room.id + '\n\n';
+                content += 'Total de estudantes: ' + room.students.length + '\n';
+                content += 'Data: ___/___/______   Horário: ___:___\n';
+                content += 'Prova: _________________________\n\n';
+                content += '--------------------------------------------------------------------------------\n';
+                
+                for (var i = 0; i < room.students.length; i++) {
+                    var student = room.students[i];
+                    var num = (i + 1).toString();
+                    while (num.length < 4) num += ' ';
+                    
+                    var matricula = student.matricula.toString();
+                    while (matricula.length < 12) matricula += ' ';
+                    
+                    var nome = student.nome;
+                    while (nome.length < 35) nome += ' ';
+                    
+                    var turma = student.turma;
+                    while (turma.length < 8) turma += ' ';
+                    
+                    content += num + matricula + nome + turma + '_________________\n';
+                }
+                
+                var blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+                var url = URL.createObjectURL(blob);
+                var link = document.createElement('a');
+                link.href = url;
+                link.download = 'lista_presenca_sala_' + room.id + '.txt';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+                alert('Lista da Sala ' + room.id + ' baixada como arquivo texto!');
             }
         }
 
@@ -844,60 +962,152 @@
                     }
                 }
                 
-                if (room) {
-                    var content = 'MAPA DE DISTRIBUIÇÃO - SALA ' + room.id + '\n';
-                    content += 'Total de estudantes: ' + room.students.length + '\n';
-                    content += 'Layout: ' + room.rows + ' fileiras x ' + room.columns + ' colunas\n\n';
-                    content += 'FRENTE DA SALA (PROFESSOR)\n';
-                    content += '============================================================\n\n';
+                if (room && typeof jsPDF !== 'undefined') {
+                    var doc = new jsPDF.jsPDF();
+                    
+                    // Logo e cabeçalho
+                    doc.setFontSize(20);
+                    doc.setTextColor(30, 77, 114);
+                    doc.text('COLÉGIO MARISTA ÁGUAS CLARAS', 20, 20);
+                    
+                    doc.setFontSize(16);
+                    doc.setTextColor(30, 77, 114);
+                    doc.text('MAPA DE DISTRIBUIÇÃO - SALA ' + room.id, 20, 35);
+                    
+                    // Informações da sala
+                    doc.setFontSize(11);
+                    doc.setTextColor(0, 0, 0);
+                    doc.text('Total de estudantes: ' + room.students.length, 20, 50);
+                    doc.text('Layout: ' + room.rows + ' fileiras x ' + room.columns + ' colunas', 20, 60);
+                    doc.text('Data: ___/___/______', 120, 50);
+                    doc.text('Prova: _________________________', 120, 60);
+                    
+                    // Referência do quadro
+                    doc.setFontSize(14);
+                    doc.setTextColor(30, 77, 114);
+                    doc.text('QUADRO', 90, 80);
+                    doc.rect(70, 85, 50, 5);
+                    
+                    // Mapa da sala
+                    var startX = 20;
+                    var startY = 100;
+                    var cellWidth = 30;
+                    var cellHeight = 15;
+                    
+                    doc.setFontSize(8);
+                    doc.setTextColor(0, 0, 0);
                     
                     for (var row = 0; row < room.rows; row++) {
-                        var rowContent = 'Fileira ' + (row + 1) + ': ';
                         for (var col = 0; col < room.columns; col++) {
                             var pos = row * room.columns + col;
                             var student = room.seatMap[pos];
+                            var x = startX + (col * cellWidth);
+                            var y = startY + (row * cellHeight);
+                            
+                            // Desenhar retângulo
+                            doc.rect(x, y, cellWidth - 2, cellHeight - 2);
+                            
                             if (student) {
-                                var studentInfo = student.nome + ' (' + student.turma + ')';
-                                if (studentInfo.length > 20) {
-                                    studentInfo = studentInfo.substring(0, 20);
-                                }
-                                while (studentInfo.length < 20) {
-                                    studentInfo += ' ';
-                                }
-                                rowContent += '[' + studentInfo + '] ';
+                                // Nome do estudante
+                                var studentText = student.nome.substring(0, 12);
+                                doc.text(studentText, x + 1, y + 6);
+                                doc.text('(' + student.turma + ')', x + 1, y + 10);
                             } else {
-                                rowContent += '[VAZIO               ] ';
+                                doc.text('VAZIO', x + 8, y + 8);
                             }
                         }
-                        content += rowContent + '\n';
                     }
                     
-                    content += '\n============================================================\n';
-                    content += 'FUNDO DA SALA\n\n';
-                    
+                    // Legenda das turmas
                     var turmas = [];
                     for (var i = 0; i < room.students.length; i++) {
                         if (turmas.indexOf(room.students[i].turma) === -1) {
                             turmas.push(room.students[i].turma);
                         }
                     }
-                    content += 'TURMAS PRESENTES: ' + turmas.join(', ') + '\n';
                     
-                    var blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-                    var url = URL.createObjectURL(blob);
-                    var link = document.createElement('a');
-                    link.href = url;
-                    link.download = 'mapa_sala_' + room.id + '.txt';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    URL.revokeObjectURL(url);
+                    doc.setFontSize(10);
+                    doc.text('TURMAS PRESENTES: ' + turmas.join(', '), 20, startY + (room.rows * cellHeight) + 20);
                     
-                    alert('Mapa da Sala ' + room.id + ' baixado com sucesso!');
+                    // Rodapé
+                    doc.setFontSize(8);
+                    doc.setTextColor(100, 100, 100);
+                    doc.text('Gerado pelo Sistema de Organização de Salas - Colégio Marista Águas Claras', 20, 285);
+                    
+                    doc.save('mapa_sala_' + room.id + '.pdf');
+                    alert('Mapa da Sala ' + room.id + ' baixado em PDF com sucesso!');
+                } else {
+                    // Fallback para texto se jsPDF não estiver disponível
+                    downloadMapText(roomId);
                 }
             } catch (error) {
-                alert('Erro ao gerar arquivo: ' + error.message);
+                alert('Erro ao gerar PDF: ' + error.message);
                 console.error('Erro no download:', error);
+                downloadMapText(roomId);
+            }
+        }
+
+        function downloadMapText(roomId) {
+            var room = null;
+            for (var i = 0; i < generatedRooms.length; i++) {
+                if (generatedRooms[i].id === roomId) {
+                    room = generatedRooms[i];
+                    break;
+                }
+            }
+            
+            if (room) {
+                var content = 'COLÉGIO MARISTA ÁGUAS CLARAS\n';
+                content += 'MAPA DE DISTRIBUIÇÃO - SALA ' + room.id + '\n';
+                content += 'Total de estudantes: ' + room.students.length + '\n';
+                content += 'Layout: ' + room.rows + ' fileiras x ' + room.columns + ' colunas\n';
+                content += 'Data: ___/___/______   Prova: _________________________\n\n';
+                content += 'QUADRO\n';
+                content += '============================================================\n\n';
+                
+                for (var row = 0; row < room.rows; row++) {
+                    var rowContent = 'Fileira ' + (row + 1) + ': ';
+                    for (var col = 0; col < room.columns; col++) {
+                        var pos = row * room.columns + col;
+                        var student = room.seatMap[pos];
+                        if (student) {
+                            var studentInfo = student.nome + ' (' + student.turma + ')';
+                            if (studentInfo.length > 20) {
+                                studentInfo = studentInfo.substring(0, 20);
+                            }
+                            while (studentInfo.length < 20) {
+                                studentInfo += ' ';
+                            }
+                            rowContent += '[' + studentInfo + '] ';
+                        } else {
+                            rowContent += '[VAZIO               ] ';
+                        }
+                    }
+                    content += rowContent + '\n';
+                }
+                
+                content += '\n============================================================\n';
+                content += 'FUNDO DA SALA\n\n';
+                
+                var turmas = [];
+                for (var i = 0; i < room.students.length; i++) {
+                    if (turmas.indexOf(room.students[i].turma) === -1) {
+                        turmas.push(room.students[i].turma);
+                    }
+                }
+                content += 'TURMAS PRESENTES: ' + turmas.join(', ') + '\n';
+                
+                var blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+                var url = URL.createObjectURL(blob);
+                var link = document.createElement('a');
+                link.href = url;
+                link.download = 'mapa_sala_' + room.id + '.txt';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+                alert('Mapa da Sala ' + room.id + ' baixado como arquivo texto!');
             }
         }
 
