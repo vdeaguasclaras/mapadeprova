@@ -342,6 +342,17 @@
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        // Verificar se jsPDF carregou corretamente
+        window.addEventListener('load', function() {
+            if (typeof window.jsPDF === 'undefined') {
+                console.log('jsPDF não carregou, tentando carregar novamente...');
+                var script = document.createElement('script');
+                script.src = 'https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js';
+                document.head.appendChild(script);
+            }
+        });
+    </script>
 </head>
 <body>
     <div class="container">
@@ -829,77 +840,82 @@
                     }
                 }
                 
-                if (room && typeof jsPDF !== 'undefined') {
-                    var doc = new jsPDF.jsPDF();
+                if (room) {
+                    // Verificar se jsPDF está disponível
+                    var jsPDFLib = window.jsPDF || window.jspdf?.jsPDF;
                     
-                    // Logo e cabeçalho
-                    doc.setFontSize(20);
-                    doc.setTextColor(30, 77, 114);
-                    doc.text('COLÉGIO MARISTA ÁGUAS CLARAS', 20, 20);
-                    
-                    doc.setFontSize(16);
-                    doc.setTextColor(30, 77, 114);
-                    doc.text('LISTA DE PRESENÇA - SALA ' + room.id, 20, 35);
-                    
-                    // Informações da prova
-                    doc.setFontSize(11);
-                    doc.setTextColor(0, 0, 0);
-                    doc.text('Total de estudantes: ' + room.students.length, 20, 50);
-                    doc.text('Data: ___/___/______', 20, 60);
-                    doc.text('Horário: ___:___', 90, 60);
-                    doc.text('Prova: _________________________', 20, 70);
-                    
-                    // Linha separadora
-                    doc.line(20, 75, 190, 75);
-                    
-                    // Cabeçalho da tabela
-                    doc.setFontSize(9);
-                    doc.setFont(undefined, 'bold');
-                    doc.text('Nº', 20, 85);
-                    doc.text('MATRÍCULA', 30, 85);
-                    doc.text('NOME', 60, 85);
-                    doc.text('TURMA', 130, 85);
-                    doc.text('ASSINATURA', 150, 85);
-                    
-                    // Linha do cabeçalho
-                    doc.line(20, 87, 190, 87);
-                    
-                    // Lista de estudantes
-                    doc.setFont(undefined, 'normal');
-                    var yPosition = 95;
-                    for (var j = 0; j < room.students.length; j++) {
-                        var student = room.students[j];
-                        var num = (j + 1).toString();
+                    if (jsPDFLib) {
+                        var doc = new jsPDFLib();
                         
-                        doc.text(num, 20, yPosition);
-                        doc.text(student.matricula, 30, yPosition);
-                        doc.text(student.nome.substring(0, 25), 60, yPosition);
-                        doc.text(student.turma, 130, yPosition);
-                        doc.text('_________________', 150, yPosition);
+                        // Logo e cabeçalho
+                        doc.setFontSize(20);
+                        doc.setTextColor(30, 77, 114);
+                        doc.text('COLÉGIO MARISTA ÁGUAS CLARAS', 20, 20);
                         
-                        yPosition += 7;
+                        doc.setFontSize(16);
+                        doc.setTextColor(30, 77, 114);
+                        doc.text('LISTA DE PRESENÇA - SALA ' + room.id, 20, 35);
                         
-                        // Nova página se necessário
-                        if (yPosition > 270) {
-                            doc.addPage();
-                            yPosition = 20;
+                        // Informações da prova
+                        doc.setFontSize(11);
+                        doc.setTextColor(0, 0, 0);
+                        doc.text('Total de estudantes: ' + room.students.length, 20, 50);
+                        doc.text('Data: ___/___/______', 20, 60);
+                        doc.text('Horário: ___:___', 90, 60);
+                        doc.text('Prova: _________________________', 20, 70);
+                        
+                        // Linha separadora
+                        doc.line(20, 75, 190, 75);
+                        
+                        // Cabeçalho da tabela
+                        doc.setFontSize(9);
+                        doc.setFont(undefined, 'bold');
+                        doc.text('Nº', 20, 85);
+                        doc.text('MATRÍCULA', 30, 85);
+                        doc.text('NOME', 60, 85);
+                        doc.text('TURMA', 130, 85);
+                        doc.text('ASSINATURA', 150, 85);
+                        
+                        // Linha do cabeçalho
+                        doc.line(20, 87, 190, 87);
+                        
+                        // Lista de estudantes
+                        doc.setFont(undefined, 'normal');
+                        var yPosition = 95;
+                        for (var j = 0; j < room.students.length; j++) {
+                            var student = room.students[j];
+                            var num = (j + 1).toString();
+                            
+                            doc.text(num, 20, yPosition);
+                            doc.text(student.matricula, 30, yPosition);
+                            doc.text(student.nome.substring(0, 25), 60, yPosition);
+                            doc.text(student.turma, 130, yPosition);
+                            doc.text('_________________', 150, yPosition);
+                            
+                            yPosition += 7;
+                            
+                            // Nova página se necessário
+                            if (yPosition > 270) {
+                                doc.addPage();
+                                yPosition = 20;
+                            }
                         }
+                        
+                        // Rodapé
+                        doc.setFontSize(8);
+                        doc.setTextColor(100, 100, 100);
+                        doc.text('Gerado pelo Sistema de Organização de Salas - Colégio Marista Águas Claras', 20, 285);
+                        
+                        doc.save('lista_presenca_sala_' + room.id + '.pdf');
+                        alert('✅ Lista da Sala ' + room.id + ' baixada em PDF com sucesso!');
+                    } else {
+                        console.log('jsPDF não está disponível, usando fallback de texto');
+                        downloadListText(roomId);
                     }
-                    
-                    // Rodapé
-                    doc.setFontSize(8);
-                    doc.setTextColor(100, 100, 100);
-                    doc.text('Gerado pelo Sistema de Organização de Salas - Colégio Marista Águas Claras', 20, 285);
-                    
-                    doc.save('lista_presenca_sala_' + room.id + '.pdf');
-                    alert('Lista da Sala ' + room.id + ' baixada em PDF com sucesso!');
-                } else {
-                    // Fallback para texto se jsPDF não estiver disponível
-                    downloadListText(roomId);
                 }
             } catch (error) {
-                alert('Erro ao gerar PDF: ' + error.message);
-                console.error('Erro no download:', error);
+                console.error('Erro ao gerar PDF:', error);
+                alert('Erro ao gerar PDF. Baixando como arquivo de texto...');
                 downloadListText(roomId);
             }
         }
@@ -962,87 +978,92 @@
                     }
                 }
                 
-                if (room && typeof jsPDF !== 'undefined') {
-                    var doc = new jsPDF.jsPDF();
+                if (room) {
+                    // Verificar se jsPDF está disponível
+                    var jsPDFLib = window.jsPDF || window.jspdf?.jsPDF;
                     
-                    // Logo e cabeçalho
-                    doc.setFontSize(20);
-                    doc.setTextColor(30, 77, 114);
-                    doc.text('COLÉGIO MARISTA ÁGUAS CLARAS', 20, 20);
-                    
-                    doc.setFontSize(16);
-                    doc.setTextColor(30, 77, 114);
-                    doc.text('MAPA DE DISTRIBUIÇÃO - SALA ' + room.id, 20, 35);
-                    
-                    // Informações da sala
-                    doc.setFontSize(11);
-                    doc.setTextColor(0, 0, 0);
-                    doc.text('Total de estudantes: ' + room.students.length, 20, 50);
-                    doc.text('Layout: ' + room.rows + ' fileiras x ' + room.columns + ' colunas', 20, 60);
-                    doc.text('Data: ___/___/______', 120, 50);
-                    doc.text('Prova: _________________________', 120, 60);
-                    
-                    // Referência do quadro
-                    doc.setFontSize(14);
-                    doc.setTextColor(30, 77, 114);
-                    doc.text('QUADRO', 90, 80);
-                    doc.rect(70, 85, 50, 5);
-                    
-                    // Mapa da sala
-                    var startX = 20;
-                    var startY = 100;
-                    var cellWidth = 30;
-                    var cellHeight = 15;
-                    
-                    doc.setFontSize(8);
-                    doc.setTextColor(0, 0, 0);
-                    
-                    for (var row = 0; row < room.rows; row++) {
-                        for (var col = 0; col < room.columns; col++) {
-                            var pos = row * room.columns + col;
-                            var student = room.seatMap[pos];
-                            var x = startX + (col * cellWidth);
-                            var y = startY + (row * cellHeight);
-                            
-                            // Desenhar retângulo
-                            doc.rect(x, y, cellWidth - 2, cellHeight - 2);
-                            
-                            if (student) {
-                                // Nome do estudante
-                                var studentText = student.nome.substring(0, 12);
-                                doc.text(studentText, x + 1, y + 6);
-                                doc.text('(' + student.turma + ')', x + 1, y + 10);
-                            } else {
-                                doc.text('VAZIO', x + 8, y + 8);
+                    if (jsPDFLib) {
+                        var doc = new jsPDFLib();
+                        
+                        // Logo e cabeçalho
+                        doc.setFontSize(20);
+                        doc.setTextColor(30, 77, 114);
+                        doc.text('COLÉGIO MARISTA ÁGUAS CLARAS', 20, 20);
+                        
+                        doc.setFontSize(16);
+                        doc.setTextColor(30, 77, 114);
+                        doc.text('MAPA DE DISTRIBUIÇÃO - SALA ' + room.id, 20, 35);
+                        
+                        // Informações da sala
+                        doc.setFontSize(11);
+                        doc.setTextColor(0, 0, 0);
+                        doc.text('Total de estudantes: ' + room.students.length, 20, 50);
+                        doc.text('Layout: ' + room.rows + ' fileiras x ' + room.columns + ' colunas', 20, 60);
+                        doc.text('Data: ___/___/______', 120, 50);
+                        doc.text('Prova: _________________________', 120, 60);
+                        
+                        // Referência do quadro
+                        doc.setFontSize(14);
+                        doc.setTextColor(30, 77, 114);
+                        doc.text('QUADRO', 90, 80);
+                        doc.rect(70, 85, 50, 5);
+                        
+                        // Mapa da sala
+                        var startX = 20;
+                        var startY = 100;
+                        var cellWidth = 30;
+                        var cellHeight = 15;
+                        
+                        doc.setFontSize(8);
+                        doc.setTextColor(0, 0, 0);
+                        
+                        for (var row = 0; row < room.rows; row++) {
+                            for (var col = 0; col < room.columns; col++) {
+                                var pos = row * room.columns + col;
+                                var student = room.seatMap[pos];
+                                var x = startX + (col * cellWidth);
+                                var y = startY + (row * cellHeight);
+                                
+                                // Desenhar retângulo
+                                doc.rect(x, y, cellWidth - 2, cellHeight - 2);
+                                
+                                if (student) {
+                                    // Nome do estudante
+                                    var studentText = student.nome.substring(0, 12);
+                                    doc.text(studentText, x + 1, y + 6);
+                                    doc.text('(' + student.turma + ')', x + 1, y + 10);
+                                } else {
+                                    doc.text('VAZIO', x + 8, y + 8);
+                                }
                             }
                         }
-                    }
-                    
-                    // Legenda das turmas
-                    var turmas = [];
-                    for (var i = 0; i < room.students.length; i++) {
-                        if (turmas.indexOf(room.students[i].turma) === -1) {
-                            turmas.push(room.students[i].turma);
+                        
+                        // Legenda das turmas
+                        var turmas = [];
+                        for (var i = 0; i < room.students.length; i++) {
+                            if (turmas.indexOf(room.students[i].turma) === -1) {
+                                turmas.push(room.students[i].turma);
+                            }
                         }
+                        
+                        doc.setFontSize(10);
+                        doc.text('TURMAS PRESENTES: ' + turmas.join(', '), 20, startY + (room.rows * cellHeight) + 20);
+                        
+                        // Rodapé
+                        doc.setFontSize(8);
+                        doc.setTextColor(100, 100, 100);
+                        doc.text('Gerado pelo Sistema de Organização de Salas - Colégio Marista Águas Claras', 20, 285);
+                        
+                        doc.save('mapa_sala_' + room.id + '.pdf');
+                        alert('✅ Mapa da Sala ' + room.id + ' baixado em PDF com sucesso!');
+                    } else {
+                        console.log('jsPDF não está disponível, usando fallback de texto');
+                        downloadMapText(roomId);
                     }
-                    
-                    doc.setFontSize(10);
-                    doc.text('TURMAS PRESENTES: ' + turmas.join(', '), 20, startY + (room.rows * cellHeight) + 20);
-                    
-                    // Rodapé
-                    doc.setFontSize(8);
-                    doc.setTextColor(100, 100, 100);
-                    doc.text('Gerado pelo Sistema de Organização de Salas - Colégio Marista Águas Claras', 20, 285);
-                    
-                    doc.save('mapa_sala_' + room.id + '.pdf');
-                    alert('Mapa da Sala ' + room.id + ' baixado em PDF com sucesso!');
-                } else {
-                    // Fallback para texto se jsPDF não estiver disponível
-                    downloadMapText(roomId);
                 }
             } catch (error) {
-                alert('Erro ao gerar PDF: ' + error.message);
-                console.error('Erro no download:', error);
+                console.error('Erro ao gerar PDF:', error);
+                alert('Erro ao gerar PDF. Baixando como arquivo de texto...');
                 downloadMapText(roomId);
             }
         }
